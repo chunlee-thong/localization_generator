@@ -1,16 +1,24 @@
-# localization_generator
+# Localization Generator
 
-A new Flutter project.
+Generate json localization file from excel sheet
 
-## Getting Started
+## How to use
 
-This project is a starting point for a Flutter application.
+- create an excel sheet and rename sheet's name to **Translation**
 
-A few resources to get you started if this is your first Flutter project:
+- Create a data structure like below or you can check file **translation_example.xlsx** in this repo
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+| Key         | en-US       | km-KH   | es-ES          | th-TH | vi-VN  |
+| ----------- | ----------- | ------- | -------------- | ----- | ------ |
+| title       | Title       | ចំណងជើង | titulo         | dgh   | dfghjk |
+| buy_account | Buy Account | ទិញគណនី | comprar cuenta | sfgg  | evsd   |
+| attraction  | Attraction  | កន្លែង  | asdfaf         | add   | dfrw   |
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Result
+
+- you will get json files base on many languages you had in your excel file
+- a static class **LocaleKeys** to access your json key
+
+## Usage
+
+Using with easy_localization package: `Text(LocaleKeys.title.tr())`
