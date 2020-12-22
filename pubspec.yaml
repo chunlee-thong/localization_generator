@@ -1,0 +1,30 @@
+name: localization_generator
+description: A new Flutter project.
+
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.1
+  filepicker_windows: ^1.0.0
+  excel: ^1.1.4
+  jin_widget_helper: ^1.6.0
+  toast: ^0.1.5
+  shared_preferences: ^0.5.12+4
+  clipboard: ^0.1.2+8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
