@@ -3,45 +3,44 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel/excel.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:localization_generator/services/local_storage_service.dart';
 
 class LocalizationGenerator {
-  static String _oneLanguageName;
-  static String _saveJSONPath;
-  static String _saveLocaleKeyClassPath;
+  static String oneLanguageName;
 
-  static Future<void> generate({
-    @required String excelFilePath,
-    @required String saveJSONPath,
-    @required String saveLocaleKeyClassPath,
-  }) async {
-    _saveJSONPath = saveJSONPath;
-    _saveLocaleKeyClassPath = saveLocaleKeyClassPath;
+  final String excelFilePath;
+  final String saveJsonPath;
+  final String saveLocaleKeyClassPath;
 
+  LocalizationGenerator(
+      {this.excelFilePath, this.saveJsonPath, this.saveLocaleKeyClassPath});
+
+  Future<void> generate() async {
     final bytes = File(excelFilePath).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     final sheetName = "Translation";
     final sheet = excel.tables[sheetName];
 
     await _generateJSONFile(sheet);
-    await generateDartClass();
+    await _generateDartClass();
+    await _saveDataToLocalStorage();
   }
 
-  static Future<void> _generateJSONFile(Sheet sheet) async {
+  Future<void> _generateJSONFile(Sheet sheet) async {
     //get language count by column count minus 1 (minus 1 becuase first column is a key column)
-    int langage_count = sheet.maxCols - 1;
+    int languageCount = sheet.maxCols - 1;
 
     //get key count by row count minus 1 (minus 1 because first row is a title row)
-    int key_count = sheet.maxRows - 1;
+    int keyCount = sheet.maxRows - 1;
 
     //getenrate language list
-    List<int> language_list = List<int>.generate(langage_count, (i) => i + 1);
-    for (var lang in language_list) {
+    List<int> languageList = List<int>.generate(languageCount, (i) => i + 1);
+    for (int lang in languageList) {
       //SplayTreeMap auto sort it's key
       SplayTreeMap<String, dynamic> data = SplayTreeMap<String, dynamic>();
 
-      var key_list = List<int>.generate(key_count, (i) => i + 1);
-      for (var key_index in key_list) {
+      List<int> keyList = List<int>.generate(keyCount, (i) => i + 1);
+      for (var key_index in keyList) {
         String key = sheet
             .cell(CellIndex.indexByColumnRow(
               columnIndex: 0,
@@ -60,7 +59,7 @@ class LocalizationGenerator {
         data[key] = value;
       }
       //get language name
-      String language_name = sheet
+      String languageName = sheet
           .cell(CellIndex.indexByColumnRow(
             columnIndex: lang,
             rowIndex: 0,
@@ -69,45 +68,56 @@ class LocalizationGenerator {
           .toString();
 
       //Save file language name to access json file and read key for LocaleKeys class
-      _oneLanguageName = language_name;
+      oneLanguageName = languageName;
 
       //
       data.keys.toList()..sort();
-      String json_data = json.encode(data);
-      final language_file = File("$_saveJSONPath/$language_name.json");
-      await language_file.writeAsString(json_data);
+      String jsonData = json.encode(data);
+      File languageFile = File("$saveJsonPath/$languageName.json");
+      await languageFile.writeAsString(jsonData);
     }
   }
 
-  static Future<void> generateDartClass() async {
-    File json_file = File("$_saveJSONPath/$_oneLanguageName.json");
-    String json_data = await json_file.readAsString();
-    Map<String, dynamic> map_data = json.decode(json_data);
+  Future<void> _generateDartClass() async {
+    File jsonFile = File("$saveJsonPath/$oneLanguageName.json");
+    String jsonData = await jsonFile.readAsString();
+    Map<String, dynamic> mapData = json.decode(jsonData);
     String dartClass = "class LocaleKeys {\n";
 
-    for (var key in map_data.keys.toList()) {
-      String key_data_type = key.runtimeType.toString();
-      String key_value = checkKeyConflict(key);
-      String key_field_name = key_value.replaceAll("-", "_");
+    for (var key in mapData.keys.toList()) {
+      String keyDataType = key.runtimeType.toString();
+      String keyValue = checkKeyConflict(key);
+      String keyFieldName = keyValue.replaceAll("-", "_");
       dartClass +=
-          "    static const $key_data_type $key_field_name = " + '"$key";\n';
+          "    static const $keyDataType $keyFieldName = " + '"$key";\n';
     }
 
     dartClass += "}";
 
-    File dartClassFile = File("$_saveLocaleKeyClassPath/locale_keys.dart");
+    File dartClassFile = File("$saveLocaleKeyClassPath/locale_keys.dart");
     dartClassFile.writeAsString(dartClass);
   }
 
-  static String checkKeyConflict(String key) {
-    if (dart_key_word.contains(key)) {
+  Future<void> _saveDataToLocalStorage() async {
+    await LocalStorageService.save(excelFilePath);
+    await LocalStorageService.save(saveJsonPath);
+    await LocalStorageService.save(saveLocaleKeyClassPath);
+    await LocalStorageService.savePreviousPath(
+      excelFilePath,
+      saveJsonPath,
+      saveLocaleKeyClassPath,
+    );
+  }
+
+  String checkKeyConflict(String key) {
+    if (DART_KEYWORD_LIST.contains(key)) {
       return "${key}_";
     }
     return key;
   }
 }
 
-List<String> dart_key_word = [
+const List<String> DART_KEYWORD_LIST = [
   "abstract ",
   "else",
   "import",
