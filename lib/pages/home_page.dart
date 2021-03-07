@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:filepicker_windows/filepicker_windows.dart' as picker;
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:jin_widget_helper/jin_widget_helper.dart';
 import 'package:localization_generator/services/local_storage_service.dart';
 import 'package:localization_generator/util/generator.dart';
 import 'package:localization_generator/widgets/simple_text_field.dart';
 import 'package:toast/toast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -20,6 +23,7 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
   TextEditingController localeKeyPathTC;
 
   Future<bool> dataFuture;
+  final initialDir = Directory(r"C:\");
 
   Future<bool> getRecentList() async {
     await LocalStorageService.init();
@@ -71,6 +75,20 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
     }
   }
 
+  void onPickJsonPath() async {
+    String pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
+    if (pickedPath != null) {
+      jsonPathTC.text = pickedPath;
+    }
+  }
+
+  void onPickLocaleKeyPath() async {
+    String pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
+    if (pickedPath != null) {
+      localeKeyPathTC.text = pickedPath;
+    }
+  }
+
   @override
   void initState() {
     dataFuture = getRecentList();
@@ -92,16 +110,18 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Localization Generator"),
+        title: Text("Localization Generator V1.0.1"),
         centerTitle: true,
         actions: [
-          FlatButton.icon(
-            onPressed: () async {
+          SmallFlatButton(
+            onTap: () async {
               await LocalStorageService.clearAll();
               refreshList();
             },
+            textColor: Colors.white,
             icon: Icon(Icons.delete_forever_outlined),
-            label: Text("Delete Recent Path"),
+            child: Text("Clear Recent Path"),
+            margin: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
           ),
         ],
       ),
@@ -109,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
         child: Container(
           alignment: Alignment.center,
           padding: EdgeInsets.all(24),
-          constraints: BoxConstraints(maxWidth: 1200, minWidth: 768),
+          constraints: BoxConstraints(maxWidth: 1600, minWidth: 768),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,8 +153,7 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
           child: FutureHandler<bool>(
               future: dataFuture,
               ready: (_) {
-                List<String> sortedList =
-                    LocalStorageService.recentPath.reversed.toList();
+                List<String> sortedList = LocalStorageService.recentPath.reversed.toList();
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -147,8 +166,7 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
                         condition: sortedList.isEmpty,
                         onTrue: Center(child: Text("Empty")),
                         onFalse: ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              Divider(height: 0),
+                          separatorBuilder: (context, index) => Divider(height: 0),
                           itemCount: sortedList.length,
                           padding: const EdgeInsets.all(16),
                           itemBuilder: (BuildContext context, int index) {
@@ -176,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
   Widget buildForm() {
     return Expanded(
       child: Card(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: formKey,
@@ -198,17 +216,19 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
                   controller: jsonPathTC,
                   hint: "Save json path",
                   readOnly: false,
+                  onPickPath: onPickJsonPath,
                 ),
                 SimpleTextField(
                   controller: localeKeyPathTC,
-                  hint: "save localekey class path",
+                  hint: "Save locale key class path",
                   readOnly: false,
+                  onPickPath: onPickLocaleKeyPath,
                 ),
                 JinLoadingButton(
                   onPressed: onGenerateFile,
                   child: Text("Generate"),
                   height: 40,
-                  color: Colors.red,
+                  color: Colors.blue,
                   textColor: Colors.white,
                   margin: EdgeInsets.fromLTRB(0, 24, 54, 0),
                 )

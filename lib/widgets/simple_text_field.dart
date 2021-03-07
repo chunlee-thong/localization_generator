@@ -17,21 +17,28 @@ class SimpleTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 32.0),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextFormField(
-            readOnly: readOnly,
-            validator: (value) => JinFormValidator.validateField(value, hint),
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: OutlineInputBorder(),
-            ),
-          ).expanded,
-          SpaceX(16),
-          IconButton(
-            icon: Icon(Icons.folder_open),
-            onPressed: onPickPath,
+          Text(hint, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          SpaceY(),
+          Row(
+            children: [
+              TextFormField(
+                readOnly: readOnly,
+                validator: (value) => JinFormValidator.validateField(value, hint),
+                controller: controller,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ).expanded,
+              SpaceX(16),
+              IconButton(
+                icon: Icon(Icons.folder_open),
+                onPressed: onPickPath,
+              ),
+            ],
           ),
         ],
       ),

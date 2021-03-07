@@ -12,8 +12,7 @@ class LocalizationGenerator {
   final String saveJsonPath;
   final String saveLocaleKeyClassPath;
 
-  LocalizationGenerator(
-      {this.excelFilePath, this.saveJsonPath, this.saveLocaleKeyClassPath});
+  LocalizationGenerator({this.excelFilePath, this.saveJsonPath, this.saveLocaleKeyClassPath});
 
   Future<void> generate() async {
     final bytes = File(excelFilePath).readAsBytesSync();
@@ -27,13 +26,13 @@ class LocalizationGenerator {
   }
 
   Future<void> _generateJSONFile(Sheet sheet) async {
-    //get language count by column count minus 1 (minus 1 becuase first column is a key column)
+    //get language count by column count minus 1 (minus 1 because first column is a key column)
     int languageCount = sheet.maxCols - 1;
 
     //get key count by row count minus 1 (minus 1 because first row is a title row)
     int keyCount = sheet.maxRows - 1;
 
-    //getenrate language list
+    //generate language list
     List<int> languageList = List<int>.generate(languageCount, (i) => i + 1);
     for (int lang in languageList) {
       //SplayTreeMap auto sort it's key
@@ -88,8 +87,7 @@ class LocalizationGenerator {
       String keyDataType = key.runtimeType.toString();
       String keyValue = checkKeyConflict(key);
       String keyFieldName = keyValue.replaceAll("-", "_");
-      dartClass +=
-          "    static const $keyDataType $keyFieldName = " + '"$key";\n';
+      dartClass += "    static const $keyDataType $keyFieldName = " + '"$key";\n';
     }
 
     dartClass += "}";
