@@ -25,7 +25,7 @@ Using with easy_localization package: `Text(LocaleKeys.title.tr())`
 
 ## Screenshot
 
-![alt text](screenshot.png "screenshot")
+![alt text](screenshot.PNG "screenshot")
 
 ## Localization Generator
 
