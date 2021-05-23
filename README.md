@@ -12,7 +12,7 @@ Generate json localization file from excel sheet
 | ----------- | ----------- | ------- | -------------- | ----- | ------ |
 | title       | Title       | ចំណងជើង | titulo         | dgh   | dfghjk |
 | buy_account | Buy Account | ទិញគណនី | comprar cuenta | sfgg  | evsd   |
-| cancel  | Cancel  | បោះបង់  | asdfaf         | add   | dfrw   |
+| cancel      | Cancel      | បោះបង់  | asdfaf         | add   | dfrw   |
 
 ## Result
 
@@ -23,11 +23,13 @@ Generate json localization file from excel sheet
 
 Using with easy_localization package: `Text(LocaleKeys.title.tr())`
 
+## Screenshot
+
+![alt text](screenshot.png "screenshot")
 
 ## Localization Generator
 
- - Author: Chunlee Thong
- - Contributor: Chunlee Thong
-
+- Author: Chunlee Thong
+- Contributor: Chunlee Thong
 
 Copyright (c) 2021 Chunlee Thong

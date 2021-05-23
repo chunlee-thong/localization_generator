@@ -1,42 +1,31 @@
 import 'dart:io';
 
-import 'package:clipboard/clipboard.dart';
 import 'package:filepicker_windows/filepicker_windows.dart' as picker;
-import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:jin_widget_helper/jin_widget_helper.dart';
+import 'package:localization_generator/model/project_model.dart';
 import 'package:localization_generator/services/local_storage_service.dart';
 import 'package:localization_generator/util/generator.dart';
+import 'package:localization_generator/widgets/custom_card.dart';
 import 'package:localization_generator/widgets/simple_text_field.dart';
+import 'package:sura_flutter/sura_flutter.dart';
 import 'package:toast/toast.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path_provider_windows/path_provider_windows.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
-  TextEditingController excelPathTC;
-  TextEditingController jsonPathTC;
-  TextEditingController localeKeyPathTC;
+class _MyHomePageState extends State<MyHomePage> with SuraFormMixin {
+  late TextEditingController excelPathTC;
+  late TextEditingController jsonPathTC;
+  late TextEditingController localeKeyPathTC;
+  late TextEditingController projectNameTC;
 
-  Future<bool> dataFuture;
-  final initialDir = Directory(r"C:\");
-
-  Future<bool> getRecentList() async {
-    await LocalStorageService.init();
-    if (LocalStorageService.previousPath.isNotEmpty) {
-      excelPathTC.text = LocalStorageService.previousPath[0];
-      jsonPathTC.text = LocalStorageService.previousPath[1];
-      localeKeyPathTC.text = LocalStorageService.previousPath[2];
-    }
-    return true;
-  }
+  FutureManager<List<ProjectModel>> projectManager = FutureManager();
 
   Future<void> onGenerateFile() async {
     if (isFormValidated) {
+      String projectName = projectNameTC.text.trim();
       String jsonPath = jsonPathTC.text.trim();
       String localeClassPath = localeKeyPathTC.text.trim();
       String excelFilePath = excelPathTC.text.trim();
@@ -47,20 +36,21 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
           saveJsonPath: jsonPath,
           saveLocaleKeyClassPath: localeClassPath,
         ).generate();
-
-        refreshList();
+        await LocalStorageService.saveProject(ProjectModel(
+          projectName,
+          excelFilePath,
+          jsonPath,
+          localeClassPath,
+        ));
+        projectManager.refresh(reloading: false);
         Toast.show("Generated", context);
       } catch (e) {
         if (e is FileSystemException) {
-          Toast.show(e.osError.message, context, duration: 3);
+          Toast.show(e.osError!.message, context, duration: 3);
         } else
           Toast.show(e.toString(), context, duration: 3);
       }
     }
-  }
-
-  void refreshList() {
-    setState(() {});
   }
 
   void onPickExcelFile() async {
@@ -75,24 +65,36 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
     }
   }
 
-  void onPickJsonPath() async {
-    String pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
-    if (pickedPath != null) {
-      jsonPathTC.text = pickedPath;
-    }
+  void onSelectProject(ProjectModel project) {
+    projectNameTC.text = project.name;
+    excelPathTC.text = project.excelPath;
+    jsonPathTC.text = project.jsonPath;
+    localeKeyPathTC.text = project.localeKeyPath;
   }
 
-  void onPickLocaleKeyPath() async {
-    String pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
-    if (pickedPath != null) {
-      localeKeyPathTC.text = pickedPath;
-    }
-  }
+  // void onPickJsonPath() async {
+  //   String? pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
+  //   if (pickedPath != null) {
+  //     jsonPathTC.text = pickedPath;
+  //   }
+  // }
+
+  // void onPickLocaleKeyPath() async {
+  //   String? pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
+  //   if (pickedPath != null) {
+  //     localeKeyPathTC.text = pickedPath;
+  //   }
+  // }
 
   @override
   void initState() {
-    dataFuture = getRecentList();
+    projectManager.asyncOperation(() async {
+      List<ProjectModel> projects = await LocalStorageService.getSavedProject();
+      if (projects.isNotEmpty) onSelectProject(projects.first);
+      return projects;
+    });
     excelPathTC = TextEditingController();
+    projectNameTC = TextEditingController();
     jsonPathTC = TextEditingController();
     localeKeyPathTC = TextEditingController();
     super.initState();
@@ -109,131 +111,130 @@ class _MyHomePageState extends State<MyHomePage> with FormPageMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Localization Generator V1.0.1"),
+        title: Text("Localization Generator V2.0.0"),
         centerTitle: true,
         actions: [
-          SmallFlatButton(
-            onTap: () async {
+          SuraFlatButton(
+            onPressed: () async {
               await LocalStorageService.clearAll();
-              refreshList();
+              projectManager.refresh();
             },
             textColor: Colors.white,
             icon: Icon(Icons.delete_forever_outlined),
-            child: Text("Clear Recent Path"),
+            child: Text("Clear All Saved Project"),
             margin: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
           ),
         ],
       ),
-      body: Center(
-        child: Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(24),
-          constraints: BoxConstraints(maxWidth: 1600, minWidth: 768),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildRecentPathList(),
-              SpaceX(16),
-              buildForm(),
-            ],
-          ),
+      body: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(24),
+        constraints: BoxConstraints(maxWidth: 1600, minWidth: 768),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildSavedProjectList(),
+            SpaceX(16),
+            VerticalDivider(),
+            buildForm(),
+          ],
         ),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  Widget buildRecentPathList() {
+  Widget buildSavedProjectList() {
     return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureHandler<bool>(
-              future: dataFuture,
-              ready: (_) {
-                List<String> sortedList = LocalStorageService.recentPath.reversed.toList();
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Recent path",
-                      style: TextStyle(fontSize: 32),
-                    ),
-                    Expanded(
-                      child: ConditionalWidget(
-                        condition: sortedList.isEmpty,
-                        onTrue: Center(child: Text("Empty")),
-                        onFalse: ListView.separated(
-                          separatorBuilder: (context, index) => Divider(height: 0),
-                          itemCount: sortedList.length,
-                          padding: const EdgeInsets.all(16),
-                          itemBuilder: (BuildContext context, int index) {
-                            final String path = sortedList[index];
-                            return ListTile(
-                              onTap: () {
-                                FlutterClipboard.copy(path).then(
-                                  (value) => Toast.show('Path Copied', context),
-                                );
-                              },
-                              title: Text(path),
-                            );
-                          },
+      child: FutureManagerBuilder<List<ProjectModel>>(
+        futureManager: projectManager,
+        ready: (context, projects) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Saved Projects",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: ConditionalWidget(
+                  condition: projects.isEmpty,
+                  onTrue: () => Center(child: Text("Empty")),
+                  onFalse: () => ListView.separated(
+                    separatorBuilder: (context, index) => Divider(height: 0),
+                    itemCount: projects.length,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    itemBuilder: (BuildContext context, int index) {
+                      final ProjectModel project = projects[index];
+                      return CustomCard(
+                        child: SuraListTile(
+                          leading: Icon(Icons.book),
+                          onTap: () => onSelectProject(project),
+                          title: Text(project.name),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SpaceY(),
+                              Text(project.excelPath),
+                              Text(project.jsonPath),
+                              Text(project.localeKeyPath),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
-        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget buildForm() {
     return Expanded(
-      child: Card(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Save Path",
-                  style: TextStyle(fontSize: 32),
-                ),
-                SpaceY(32),
-                SimpleTextField(
-                  controller: excelPathTC,
-                  hint: "Excel file",
-                  onPickPath: onPickExcelFile,
-                  readOnly: true,
-                ),
-                SimpleTextField(
-                  controller: jsonPathTC,
-                  hint: "Save json path",
-                  readOnly: false,
-                  onPickPath: onPickJsonPath,
-                ),
-                SimpleTextField(
-                  controller: localeKeyPathTC,
-                  hint: "Save locale key class path",
-                  readOnly: false,
-                  onPickPath: onPickLocaleKeyPath,
-                ),
-                JinLoadingButton(
-                  onPressed: onGenerateFile,
-                  child: Text("Generate"),
-                  height: 40,
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  margin: EdgeInsets.fromLTRB(0, 24, 54, 0),
-                )
-              ],
-            ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SimpleTextField(
+                controller: projectNameTC,
+                hint: "Project Name",
+                readOnly: false,
+              ),
+              SimpleTextField(
+                controller: excelPathTC,
+                hint: "Excel file",
+                onPickPath: onPickExcelFile,
+                readOnly: true,
+              ),
+              SimpleTextField(
+                controller: jsonPathTC,
+                hint: "Save json path",
+                readOnly: false,
+              ),
+              SimpleTextField(
+                controller: localeKeyPathTC,
+                hint: "Save locale key class path",
+                readOnly: false,
+              ),
+              SuraAsyncButton(
+                onPressed: onGenerateFile,
+                child: Text("Generate And Save"),
+                height: 40,
+                color: Colors.blue,
+                textColor: Colors.white,
+                margin: EdgeInsets.fromLTRB(0, 24, 54, 0),
+              )
+            ],
           ),
         ),
       ),

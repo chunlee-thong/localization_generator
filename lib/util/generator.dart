@@ -3,26 +3,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel/excel.dart';
-import 'package:localization_generator/services/local_storage_service.dart';
 
 class LocalizationGenerator {
-  static String oneLanguageName;
+  static String? oneLanguageName;
 
   final String excelFilePath;
   final String saveJsonPath;
   final String saveLocaleKeyClassPath;
 
-  LocalizationGenerator({this.excelFilePath, this.saveJsonPath, this.saveLocaleKeyClassPath});
+  LocalizationGenerator({
+    required this.excelFilePath,
+    required this.saveJsonPath,
+    required this.saveLocaleKeyClassPath,
+  });
 
   Future<void> generate() async {
     final bytes = File(excelFilePath).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     final sheetName = "Translation";
-    final sheet = excel.tables[sheetName];
+    final sheet = excel.tables[sheetName]!;
 
     await _generateJSONFile(sheet);
     await _generateDartClass();
-    await _saveDataToLocalStorage();
   }
 
   Future<void> _generateJSONFile(Sheet sheet) async {
@@ -94,17 +96,6 @@ class LocalizationGenerator {
 
     File dartClassFile = File("$saveLocaleKeyClassPath/locale_keys.dart");
     dartClassFile.writeAsString(dartClass);
-  }
-
-  Future<void> _saveDataToLocalStorage() async {
-    await LocalStorageService.save(excelFilePath);
-    await LocalStorageService.save(saveJsonPath);
-    await LocalStorageService.save(saveLocaleKeyClassPath);
-    await LocalStorageService.savePreviousPath(
-      excelFilePath,
-      saveJsonPath,
-      saveLocaleKeyClassPath,
-    );
   }
 
   String checkKeyConflict(String key) {
