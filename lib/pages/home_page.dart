@@ -10,12 +10,12 @@ import 'package:localization_generator/widgets/simple_text_field.dart';
 import 'package:sura_flutter/sura_flutter.dart';
 import 'package:toast/toast.dart';
 
-class MyHomePage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SuraFormMixin {
+class _HomePageState extends State<HomePage> with SuraFormMixin {
   late TextEditingController excelPathTC;
   late TextEditingController jsonPathTC;
   late TextEditingController localeKeyPathTC;
