@@ -7,7 +7,12 @@ class LocalStorageService {
   static Future<List<ProjectModel>> getSavedProject() async {
     box = await Hive.openBox<ProjectModel>('projects');
     List<ProjectModel> projects = box.values.toList();
-    projects.sort((p1, p2) => p2.timestamp.compareTo(p1.timestamp));
+    projects.sort((p1, p2) {
+      if (p1.timestamp != null && p2.timestamp != null) {
+        return p2.timestamp!.compareTo(p1.timestamp!);
+      }
+      return 0;
+    });
     return projects;
   }
 

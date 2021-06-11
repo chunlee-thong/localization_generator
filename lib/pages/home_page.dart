@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           excelFilePath,
           jsonPath,
           localeClassPath,
+          DateTime.now().millisecondsSinceEpoch,
         ));
         projectManager.refresh(reloading: false);
         Toast.show("Generated", context);
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Localization Generator V2.0.0"),
+        title: Text("Localization Generator V2.0.1"),
         centerTitle: true,
         actions: [
           SuraFlatButton(

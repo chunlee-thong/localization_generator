@@ -17,7 +17,7 @@ class ProjectModel {
   final String localeKeyPath;
 
   @HiveField(4)
-  final int timestamp;
+  final int? timestamp;
 
-  ProjectModel(this.name, this.excelPath, this.jsonPath, this.localeKeyPath) : timestamp = DateTime.now().millisecondsSinceEpoch;
+  ProjectModel(this.name, this.excelPath, this.jsonPath, this.localeKeyPath, this.timestamp);
 }
