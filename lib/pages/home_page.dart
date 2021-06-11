@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           saveJsonPath: jsonPath,
           saveLocaleKeyClassPath: localeClassPath,
         ).generate();
+        //
+        print("Reach here");
         await LocalStorageService.saveProject(ProjectModel(
           projectName,
           excelFilePath,
@@ -55,6 +57,14 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
   }
 
   void onPickExcelFile() async {
+    if (Platform.isMacOS) {
+      Toast.show(
+        "File picker isn't available in Mac OS, Please type your file path manually",
+        context,
+        duration: 3,
+      );
+      return;
+    }
     final file = picker.OpenFilePicker();
     file.hidePinnedPlaces = true;
     file.forcePreviewPaneOn = true;
@@ -215,7 +225,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
                 controller: excelPathTC,
                 hint: "Excel file",
                 onPickPath: onPickExcelFile,
-                readOnly: true,
+                readOnly: false,
               ),
               SimpleTextField(
                 controller: jsonPathTC,
