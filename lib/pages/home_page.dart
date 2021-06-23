@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:filepicker_windows/filepicker_windows.dart' as picker;
 import 'package:flutter/material.dart';
+import 'package:localization_generator/constant/app_config.dart';
 import 'package:localization_generator/model/project_model.dart';
 import 'package:localization_generator/services/local_storage_service.dart';
 import 'package:localization_generator/util/generator.dart';
+import 'package:localization_generator/widgets/app_info_dialog.dart';
 import 'package:localization_generator/widgets/custom_card.dart';
 import 'package:localization_generator/widgets/simple_text_field.dart';
 import 'package:sura_flutter/sura_flutter.dart';
@@ -16,10 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SuraFormMixin {
-  late TextEditingController excelPathTC;
-  late TextEditingController jsonPathTC;
-  late TextEditingController localeKeyPathTC;
-  late TextEditingController projectNameTC;
+  late TextEditingController excelPathTC, jsonPathTC, localeKeyPathTC, projectNameTC;
 
   FutureManager<List<ProjectModel>> projectManager = FutureManager();
 
@@ -37,7 +36,6 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           saveLocaleKeyClassPath: localeClassPath,
         ).generate();
         //
-        print("Reach here");
         await LocalStorageService.saveProject(ProjectModel(
           projectName,
           excelFilePath,
@@ -69,7 +67,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     file.hidePinnedPlaces = true;
     file.forcePreviewPaneOn = true;
     file.filterSpecification = {'Excel file': '*.xlsx'};
-    file.title = 'Select an image';
+    file.title = 'Select an excel file';
     final result = file.getFile();
     if (result != null) {
       excelPathTC.text = result.path;
@@ -82,20 +80,6 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     jsonPathTC.text = project.jsonPath;
     localeKeyPathTC.text = project.localeKeyPath;
   }
-
-  // void onPickJsonPath() async {
-  //   String? pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
-  //   if (pickedPath != null) {
-  //     jsonPathTC.text = pickedPath;
-  //   }
-  // }
-
-  // void onPickLocaleKeyPath() async {
-  //   String? pickedPath = await FilesystemPicker.open(context: context, rootDirectory: initialDir);
-  //   if (pickedPath != null) {
-  //     localeKeyPathTC.text = pickedPath;
-  //   }
-  // }
 
   @override
   void initState() {
@@ -114,6 +98,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
   @override
   void dispose() {
     excelPathTC.dispose();
+    projectNameTC.dispose();
     jsonPathTC.dispose();
     localeKeyPathTC.dispose();
     super.dispose();
@@ -124,18 +109,19 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Localization Generator V2.0.1"),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset("assets/images/app-icon.png"),
+        ),
+        title: Text("Localization Generator V${AppConfig.APP_VERSION}"),
+        //backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
-          SuraFlatButton(
-            onPressed: () async {
-              await LocalStorageService.clearAll();
-              projectManager.refresh();
+          IconButton(
+            onPressed: () {
+              showDialog(context: context, builder: (_) => AppInfoDialog());
             },
-            textColor: Colors.white,
-            icon: Icon(Icons.delete_forever_outlined),
-            child: Text("Clear All Saved Project"),
-            margin: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+            icon: Icon(Icons.info_outline),
           ),
         ],
       ),
@@ -166,9 +152,28 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Saved Projects",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Saved Projects",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  TextButton.icon(
+                    label: Text("Clear"),
+                    style: TextButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    onPressed: () async {
+                      await LocalStorageService.clearAll();
+                      projectManager.refresh();
+                    },
+                    icon: Icon(
+                      Icons.delete_outline_outlined,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
               ),
               Expanded(
                 child: ConditionalWidget(
@@ -243,7 +248,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
                 height: 40,
                 color: Colors.blue,
                 textColor: Colors.white,
-                margin: EdgeInsets.fromLTRB(0, 24, 54, 0),
+                margin: EdgeInsets.fromLTRB(0, 16, 16, 0),
               )
             ],
           ),

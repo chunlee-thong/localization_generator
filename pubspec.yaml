@@ -1,7 +1,7 @@
 name: localization_generator
 description: A window desktop application to generate localization config from excel file into .json file and LocaleKey class
 
-version: 2.0.1
+version: 2.0.2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -31,9 +31,21 @@ dev_dependencies:
     sdk: flutter
   hive_generator: ^1.1.0
   build_runner: ^2.0.3
+  flutter_launcher_icons:
+    git:
+      url: https://github.com/dirkbo/flutter_launcher_icons.git
+      ref: master
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  macos: true
+  image_path: "assets/images/app-icon.png"
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
 
   fonts:
     - family: Kantumruy
