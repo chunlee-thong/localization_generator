@@ -33,6 +33,10 @@ Using with easy_localization package: `Text(LocaleKeys.title.tr())`
 
 ![alt text](screenshot.PNG "screenshot")
 
+## Mac zip command
+
+ditto -ck -rsrc --sequesterRsrc --keepParent "Localization Generator.app" localization-generator-macos.zip
+
 ## Localization Generator
 
 - Author: Chunlee Thong
