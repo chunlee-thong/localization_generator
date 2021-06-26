@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
-import 'package:localization_generator/model/project_model.dart';
+
+import '../model/project_model.dart';
 
 class LocalStorageService {
   static late Box<ProjectModel> box;

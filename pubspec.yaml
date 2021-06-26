@@ -1,7 +1,7 @@
 name: localization_generator
 description: A window desktop application to generate localization config from excel file into .json file and LocaleKey class
 
-version: 2.0.2
+version: 2.1.0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

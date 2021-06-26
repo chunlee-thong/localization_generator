@@ -24,13 +24,14 @@ class LocalizationGenerator {
     if (isExcelPath(excelFilePathOrGoogleSheetId)) {
       path = excelFilePathOrGoogleSheetId;
     } else {
-      path = await getDataFromGoogleSheet();
+      path = await getDataFromGoogleSheet(excelFilePathOrGoogleSheetId);
     }
     print(path);
     final bytes = File(path).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     final sheetName = "Translation";
-    final sheet = excel.tables[sheetName]!;
+    final sheet = excel.tables[sheetName];
+    if (sheet == null) throw "Can't find a Translation sheet";
 
     await _generateJSONFile(sheet);
     await _generateDartClass();
@@ -40,13 +41,12 @@ class LocalizationGenerator {
     return value.contains("xlsx");
   }
 
-  Future getDataFromGoogleSheet() async {
+  Future getDataFromGoogleSheet(String googleSheetId) async {
     final headers = {
       'Content-Type': 'text/xlsx; charset=utf-8',
       'Accept': '*/*',
     };
-    String docId = "1aFnPdx4mRexsL2RrcuP-buf0d2T5OfgRFRnrtvCzVLw";
-    String link = "https://docs.google.com/spreadsheets/export?format=xlsx&id=$docId";
+    String link = "https://docs.google.com/spreadsheets/export?format=xlsx&id=$googleSheetId";
     try {
       final response = await http.get(Uri.parse(link), headers: headers);
       Directory supportDir = await getApplicationSupportDirectory();
@@ -108,7 +108,7 @@ class LocalizationGenerator {
       //
       data.keys.toList()..sort();
       String jsonData = json.encode(data);
-      File languageFile = File("$saveJsonPath/$languageName.json");
+      File languageFile = await File("$saveJsonPath/$languageName.json").create(recursive: true);
       await languageFile.writeAsString(jsonData);
     }
   }
@@ -128,7 +128,7 @@ class LocalizationGenerator {
 
     dartClass += "}";
 
-    File dartClassFile = File("$saveLocaleKeyClassPath/locale_keys.dart");
+    File dartClassFile = await File("$saveLocaleKeyClassPath/locale_keys.dart").create(recursive: true);
     dartClassFile.writeAsString(dartClass);
   }
 

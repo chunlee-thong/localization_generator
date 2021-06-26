@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:filepicker_windows/filepicker_windows.dart' as picker;
 import 'package:flutter/material.dart';
-import 'package:localization_generator/constant/app_config.dart';
-import 'package:localization_generator/model/project_model.dart';
-import 'package:localization_generator/services/local_storage_service.dart';
-import 'package:localization_generator/util/generator.dart';
-import 'package:localization_generator/widgets/app_info_dialog.dart';
-import 'package:localization_generator/widgets/custom_card.dart';
-import 'package:localization_generator/widgets/simple_text_field.dart';
 import 'package:sura_flutter/sura_flutter.dart';
 import 'package:toast/toast.dart';
+
+import '../model/project_model.dart';
+import '../services/local_storage_service.dart';
+import '../util/generator.dart';
+import '../widgets/app_info_dialog.dart';
+import '../widgets/custom_card.dart';
+import '../widgets/simple_text_field.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SuraFormMixin {
-  late TextEditingController excelPathTC, jsonPathTC, localeKeyPathTC, projectNameTC;
+  late TextEditingController excelOrGoogleSheetTC, jsonPathTC, localeKeyPathTC, projectNameTC;
 
   FutureManager<List<ProjectModel>> projectManager = FutureManager();
 
@@ -27,18 +27,18 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
       String projectName = projectNameTC.text.trim();
       String jsonPath = jsonPathTC.text.trim();
       String localeClassPath = localeKeyPathTC.text.trim();
-      String excelFilePath = excelPathTC.text.trim();
+      String excelOrGoogleSheet = excelOrGoogleSheetTC.text.trim();
 
       try {
         await LocalizationGenerator(
-          excelFilePathOrGoogleSheetId: excelFilePath,
+          excelFilePathOrGoogleSheetId: excelOrGoogleSheet,
           saveJsonPath: jsonPath,
           saveLocaleKeyClassPath: localeClassPath,
         ).generate();
         //
         await LocalStorageService.saveProject(ProjectModel(
           projectName,
-          excelFilePath,
+          excelOrGoogleSheet,
           jsonPath,
           localeClassPath,
           DateTime.now().millisecondsSinceEpoch,
@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
         Toast.show("Generated", context);
       } catch (e) {
         if (e is FileSystemException) {
-          Toast.show(e.osError!.message, context, duration: 3);
+          Toast.show(e.message, context, duration: 3);
         } else
           Toast.show(e.toString(), context, duration: 3);
       }
@@ -70,13 +70,13 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     file.title = 'Select an excel file';
     final result = file.getFile();
     if (result != null) {
-      excelPathTC.text = result.path;
+      excelOrGoogleSheetTC.text = result.path;
     }
   }
 
   void onSelectProject(ProjectModel project) {
     projectNameTC.text = project.name;
-    excelPathTC.text = project.excelPath;
+    excelOrGoogleSheetTC.text = project.excelPath;
     jsonPathTC.text = project.jsonPath;
     localeKeyPathTC.text = project.localeKeyPath;
   }
@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
       if (projects.isNotEmpty) onSelectProject(projects.first);
       return projects;
     });
-    excelPathTC = TextEditingController();
+    excelOrGoogleSheetTC = TextEditingController();
     projectNameTC = TextEditingController();
     jsonPathTC = TextEditingController();
     localeKeyPathTC = TextEditingController();
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
 
   @override
   void dispose() {
-    excelPathTC.dispose();
+    excelOrGoogleSheetTC.dispose();
     projectNameTC.dispose();
     jsonPathTC.dispose();
     localeKeyPathTC.dispose();
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset("assets/images/app-icon.png"),
         ),
-        title: Text("Localization Generator V${AppConfig.APP_VERSION}"),
+        title: Text("Localization Generator"),
         //backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
@@ -227,8 +227,8 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
                 readOnly: false,
               ),
               SimpleTextField(
-                controller: excelPathTC,
-                hint: "Excel file or Google sheet docId",
+                controller: excelOrGoogleSheetTC,
+                hint: "Excel file or Sheet ID",
                 onPickPath: onPickExcelFile,
                 readOnly: false,
               ),

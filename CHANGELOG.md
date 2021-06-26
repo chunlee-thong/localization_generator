@@ -1,3 +1,7 @@
+## [2.1.0] - 26 June 2021
+
+- Support google sheet document
+
 ## [2.0.2] - 24 June 2021
 
 - Improve UI and add icon to MacOS and window
