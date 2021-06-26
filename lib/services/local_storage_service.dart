@@ -21,6 +21,10 @@ class LocalStorageService {
     await box.put(project.name, project);
   }
 
+  static Future deleteProject(ProjectModel project) async {
+    await box.delete(project.name);
+  }
+
   static Future clearAll() async {
     await box.clear();
   }

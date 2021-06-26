@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:filepicker_windows/filepicker_windows.dart' as picker;
 import 'package:flutter/material.dart';
+import 'package:localization_generator/widgets/project_card.dart';
 import 'package:sura_flutter/sura_flutter.dart';
 import 'package:toast/toast.dart';
 
@@ -9,7 +10,6 @@ import '../model/project_model.dart';
 import '../services/local_storage_service.dart';
 import '../util/generator.dart';
 import '../widgets/app_info_dialog.dart';
-import '../widgets/custom_card.dart';
 import '../widgets/simple_text_field.dart';
 
 class HomePage extends StatefulWidget {
@@ -179,27 +179,20 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
                 child: ConditionalWidget(
                   condition: projects.isEmpty,
                   onTrue: () => Center(child: Text("Empty")),
-                  onFalse: () => ListView.separated(
-                    separatorBuilder: (context, index) => Divider(height: 0),
+                  onFalse: () => ListView.builder(
                     itemCount: projects.length,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     itemBuilder: (BuildContext context, int index) {
                       final ProjectModel project = projects[index];
-                      return CustomCard(
-                        child: SuraListTile(
-                          leading: Icon(Icons.book),
-                          onTap: () => onSelectProject(project),
-                          title: Text(project.name),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SpaceY(),
-                              Text(project.excelPath),
-                              Text(project.jsonPath),
-                              Text(project.localeKeyPath),
-                            ],
-                          ),
-                        ),
+                      return ProjectCard(
+                        onSelect: () {
+                          onSelectProject(project);
+                        },
+                        onDelete: () async {
+                          await LocalStorageService.deleteProject(project);
+                          projectManager.refresh();
+                        },
+                        project: project,
                       );
                     },
                   ),
@@ -215,7 +208,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
   Widget buildForm() {
     return Expanded(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
         child: Form(
           key: formKey,
           child: Column(
