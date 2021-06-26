@@ -11,7 +11,8 @@ import 'pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Directory supportDir = await getApplicationSupportDirectory();
-  //Appdata/roaming/com.example/localization_generator
+  //Window: ~/Appdata/roaming/com.chunlee/localization_generator
+  //MAC: ~/Library/Application support/com.chunlee.localization_generator
   await Hive.initFlutter(supportDir.path);
   runApp(MyApp());
 }

@@ -3,28 +3,62 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel/excel.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class LocalizationGenerator {
   static String? oneLanguageName;
 
-  final String excelFilePath;
+  final String excelFilePathOrGoogleSheetId;
   final String saveJsonPath;
   final String saveLocaleKeyClassPath;
 
   LocalizationGenerator({
-    required this.excelFilePath,
+    required this.excelFilePathOrGoogleSheetId,
     required this.saveJsonPath,
     required this.saveLocaleKeyClassPath,
   });
 
   Future<void> generate() async {
-    final bytes = File(excelFilePath).readAsBytesSync();
+    String path = "";
+    if (isExcelPath(excelFilePathOrGoogleSheetId)) {
+      path = excelFilePathOrGoogleSheetId;
+    } else {
+      path = await getDataFromGoogleSheet();
+    }
+    print(path);
+    final bytes = File(path).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     final sheetName = "Translation";
     final sheet = excel.tables[sheetName]!;
 
     await _generateJSONFile(sheet);
     await _generateDartClass();
+  }
+
+  bool isExcelPath(String value) {
+    return value.contains("xlsx");
+  }
+
+  Future getDataFromGoogleSheet() async {
+    final headers = {
+      'Content-Type': 'text/xlsx; charset=utf-8',
+      'Accept': '*/*',
+    };
+    String docId = "1aFnPdx4mRexsL2RrcuP-buf0d2T5OfgRFRnrtvCzVLw";
+    String link = "https://docs.google.com/spreadsheets/export?format=xlsx&id=$docId";
+    try {
+      final response = await http.get(Uri.parse(link), headers: headers);
+      Directory supportDir = await getApplicationSupportDirectory();
+      final excelFile = File("${supportDir.path}/data.xlsx");
+      if (!excelFile.existsSync()) {
+        excelFile.createSync(recursive: true);
+      }
+      await excelFile.writeAsBytes(response.bodyBytes);
+      return excelFile.path;
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<void> _generateJSONFile(Sheet sheet) async {

@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
 
       try {
         await LocalizationGenerator(
-          excelFilePath: excelFilePath,
+          excelFilePathOrGoogleSheetId: excelFilePath,
           saveJsonPath: jsonPath,
           saveLocaleKeyClassPath: localeClassPath,
         ).generate();
@@ -228,7 +228,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
               ),
               SimpleTextField(
                 controller: excelPathTC,
-                hint: "Excel file",
+                hint: "Excel file or Google sheet docId",
                 onPickPath: onPickExcelFile,
                 readOnly: false,
               ),
