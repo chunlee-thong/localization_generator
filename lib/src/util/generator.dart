@@ -26,10 +26,9 @@ class LocalizationGenerator {
     } else {
       path = await getDataFromGoogleSheet(excelFilePathOrGoogleSheetId);
     }
-    print(path);
     final bytes = File(path).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
-    final sheetName = "Translation";
+    const sheetName = "Translation";
     final sheet = excel.tables[sheetName];
     if (sheet == null) throw "Can't find a Translation sheet";
 
@@ -57,7 +56,7 @@ class LocalizationGenerator {
       await excelFile.writeAsBytes(response.bodyBytes);
       return excelFile.path;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -120,10 +119,9 @@ class LocalizationGenerator {
     String dartClass = "class LocaleKeys {\n";
 
     for (var key in mapData.keys.toList()) {
-      String keyDataType = key.runtimeType.toString();
       String keyValue = checkKeyConflict(key);
       String keyFieldName = keyValue.replaceAll("-", "_");
-      dartClass += "    static const $keyDataType $keyFieldName = " + '"$key";\n';
+      dartClass += '    static const String $keyFieldName = "$key";\n';
     }
 
     dartClass += "}";

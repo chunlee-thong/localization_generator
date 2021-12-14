@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:localization_generator/constant/app_config.dart';
+import 'package:localization_generator/src/constant/app_config.dart';
 
 class AppInfoDialog extends StatelessWidget {
   const AppInfoDialog({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class AppInfoDialog extends StatelessWidget {
         width: 64,
       ),
       applicationVersion: AppConfig.APP_VERSION,
-      children: [
+      children: const [
         Text("Maintainer: Chunlee Thong"),
       ],
     );

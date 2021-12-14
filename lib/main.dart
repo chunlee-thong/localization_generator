@@ -1,16 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'model/project_model.dart';
-import 'pages/home_page.dart';
+import 'src/model/project_model.dart';
+import 'src/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Directory supportDir = await getApplicationSupportDirectory();
+  Directory supportDir = kReleaseMode ? await getApplicationSupportDirectory() : await getTemporaryDirectory();
   //Window: ~/Appdata/roaming/com.chunlee/localization_generator
   //MAC: ~/Library/Application support/com.chunlee.localization_generator
   await Hive.initFlutter(supportDir.path);
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:localization_generator/model/project_model.dart';
+import 'package:localization_generator/src/model/project_model.dart';
 import 'package:sura_flutter/sura_flutter.dart';
 
 class ProjectCard extends StatelessWidget {
@@ -19,13 +19,13 @@ class ProjectCard extends StatelessWidget {
       elevation: 3.5,
       margin: const EdgeInsets.only(bottom: 16),
       child: SuraListTile(
-        leading: Icon(Icons.book),
+        leading: const Icon(Icons.book),
         onTap: onSelect,
         title: Text(project.name),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SpaceY(),
+            const SpaceY(),
             Text(project.excelPath),
             Text(project.jsonPath),
             Text(project.localeKeyPath),
@@ -33,7 +33,7 @@ class ProjectCard extends StatelessWidget {
         ),
         trailing: IconButton(
           onPressed: onDelete,
-          icon: Icon(Icons.delete, color: Colors.red),
+          icon: const Icon(Icons.delete, color: Colors.red),
         ),
       ),
     );

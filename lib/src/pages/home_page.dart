@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:filepicker_windows/filepicker_windows.dart' as picker;
 import 'package:flutter/material.dart';
-import 'package:localization_generator/widgets/project_card.dart';
+import 'package:localization_generator/src/pages/widgets/saved_project_list.dart';
 import 'package:sura_flutter/sura_flutter.dart';
+import 'package:sura_manager/sura_manager.dart';
 import 'package:toast/toast.dart';
 
 import '../model/project_model.dart';
@@ -13,6 +13,7 @@ import '../widgets/app_info_dialog.dart';
 import '../widgets/simple_text_field.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -48,30 +49,18 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
       } catch (e) {
         if (e is FileSystemException) {
           Toast.show(e.message, context, duration: 3);
-        } else
+        } else {
           Toast.show(e.toString(), context, duration: 3);
+        }
       }
     }
   }
 
   void onPickExcelFile() async {
-    if (Platform.isMacOS) {
-      Toast.show(
-        "File picker isn't available in Mac OS, Please type your file path manually",
-        context,
-        duration: 3,
-      );
-      return;
-    }
-    final file = picker.OpenFilePicker();
-    file.hidePinnedPlaces = true;
-    file.forcePreviewPaneOn = true;
-    file.filterSpecification = {'Excel file': '*.xlsx'};
-    file.title = 'Select an excel file';
-    final result = file.getFile();
-    if (result != null) {
-      excelOrGoogleSheetTC.text = result.path;
-    }
+    //final file = picker.OpenFilePicker();
+    // if (path != null) {
+    //   excelOrGoogleSheetTC.text = path;
+    // }
   }
 
   void onSelectProject(ProjectModel project) {
@@ -113,30 +102,33 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           padding: const EdgeInsets.all(8.0),
           child: Image.asset("assets/images/app-icon.png"),
         ),
-        title: Text("Localization Generator"),
+        title: const Text("Localization Generator"),
         //backgroundColor: Colors.white,
         centerTitle: true,
         actions: [
           IconButton(
             onPressed: () {
-              showDialog(context: context, builder: (_) => AppInfoDialog());
+              showDialog(context: context, builder: (_) => const AppInfoDialog());
             },
-            icon: Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
           ),
         ],
       ),
       body: Container(
         alignment: Alignment.center,
-        padding: EdgeInsets.all(24),
-        constraints: BoxConstraints(maxWidth: 1600, minWidth: 768),
+        padding: const EdgeInsets.all(24),
+        constraints: const BoxConstraints(maxWidth: 1600, minWidth: 768),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildSavedProjectList(),
-            SpaceX(16),
-            VerticalDivider(),
-            buildForm(),
+            SavedProjectList(
+              projectManager: projectManager,
+              onSelectProject: onSelectProject,
+            ),
+            const SpaceX(16),
+            const VerticalDivider(),
+            _buildForm(),
           ],
         ),
       ),
@@ -144,68 +136,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     );
   }
 
-  Widget buildSavedProjectList() {
-    return Expanded(
-      child: FutureManagerBuilder<List<ProjectModel>>(
-        futureManager: projectManager,
-        ready: (context, projects) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Saved Projects",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  TextButton.icon(
-                    label: Text("Clear"),
-                    style: TextButton.styleFrom(
-                      primary: Colors.red,
-                    ),
-                    onPressed: () async {
-                      await LocalStorageService.clearAll();
-                      projectManager.refresh();
-                    },
-                    icon: Icon(
-                      Icons.delete_outline_outlined,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: ConditionalWidget(
-                  condition: projects.isEmpty,
-                  onTrue: () => Center(child: Text("Empty")),
-                  onFalse: () => ListView.builder(
-                    itemCount: projects.length,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    itemBuilder: (BuildContext context, int index) {
-                      final ProjectModel project = projects[index];
-                      return ProjectCard(
-                        onSelect: () {
-                          onSelectProject(project);
-                        },
-                        onDelete: () async {
-                          await LocalStorageService.deleteProject(project);
-                          projectManager.refresh();
-                        },
-                        project: project,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget buildForm() {
+  Widget _buildForm() {
     return Expanded(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
@@ -222,7 +153,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
               SimpleTextField(
                 controller: excelOrGoogleSheetTC,
                 hint: "Excel file or Sheet ID",
-                onPickPath: onPickExcelFile,
+                //onPickPath: onPickExcelFile,
                 readOnly: false,
               ),
               SimpleTextField(
@@ -237,11 +168,11 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
               ),
               SuraAsyncButton(
                 onPressed: onGenerateFile,
-                child: Text("Generate And Save"),
+                child: const Text("Generate And Save"),
                 height: 40,
                 color: Colors.blue,
                 textColor: Colors.white,
-                margin: EdgeInsets.fromLTRB(0, 16, 16, 0),
+                margin: const EdgeInsets.fromLTRB(0, 16, 16, 0),
               )
             ],
           ),
