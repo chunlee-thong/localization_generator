@@ -1,5 +1,5 @@
 name: localization_generator
-description: A window desktop application to generate localization config from excel file into .json file and LocaleKey class
+description: Flutter desktop application for generating JSON file and Localekeys class from Excel file or Google sheet. Using along with easy_localization package.
 
 version: 2.2.0
 publish_to: "none"
