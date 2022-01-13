@@ -21,22 +21,25 @@ class SimpleTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(hint, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          SpaceY(),
+          Text(
+            hint,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SpaceY(),
           Row(
             children: [
               TextFormField(
                 readOnly: readOnly,
                 validator: (value) => SuraFormValidator.validateField(value!, field: hint),
                 controller: controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                 ),
               ).expanded,
-              SpaceX(16),
+              const SpaceX(16),
               if (onPickPath != null)
                 IconButton(
-                  icon: Icon(Icons.folder_open),
+                  icon: const Icon(Icons.folder_open),
                   onPressed: onPickPath,
                 ),
             ],

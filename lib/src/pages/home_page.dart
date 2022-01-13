@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_desktop_folder_picker/flutter_desktop_folder_picker.dart';
 import 'package:localization_generator/src/pages/widgets/saved_project_list.dart';
 import 'package:sura_flutter/sura_flutter.dart';
 import 'package:sura_manager/sura_manager.dart';
@@ -54,13 +55,6 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
         }
       }
     }
-  }
-
-  void onPickExcelFile() async {
-    //final file = picker.OpenFilePicker();
-    // if (path != null) {
-    //   excelOrGoogleSheetTC.text = path;
-    // }
   }
 
   void onSelectProject(ProjectModel project) {
@@ -148,23 +142,31 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
               SimpleTextField(
                 controller: projectNameTC,
                 hint: "Project Name",
-                readOnly: false,
               ),
               SimpleTextField(
                 controller: excelOrGoogleSheetTC,
                 hint: "Excel file or Sheet ID",
                 //onPickPath: onPickExcelFile,
-                readOnly: false,
               ),
               SimpleTextField(
                 controller: jsonPathTC,
+                onPickPath: () async {
+                  String? path = await FlutterDesktopFolderPicker.openFolderPickerDialog();
+                  if (path != null) {
+                    jsonPathTC.text = path;
+                  }
+                },
                 hint: "Save json path",
-                readOnly: false,
               ),
               SimpleTextField(
                 controller: localeKeyPathTC,
+                onPickPath: () async {
+                  String? path = await FlutterDesktopFolderPicker.openFolderPickerDialog();
+                  if (path != null) {
+                    localeKeyPathTC.text = path;
+                  }
+                },
                 hint: "Save locale key class path",
-                readOnly: false,
               ),
               SuraAsyncButton(
                 onPressed: onGenerateFile,

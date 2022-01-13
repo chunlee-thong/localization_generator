@@ -40,7 +40,7 @@ class LocalizationGenerator {
     return value.contains("xlsx");
   }
 
-  Future getDataFromGoogleSheet(String googleSheetId) async {
+  Future<String> getDataFromGoogleSheet(String googleSheetId) async {
     final headers = {
       'Content-Type': 'text/xlsx; charset=utf-8',
       'Accept': '*/*',
@@ -50,8 +50,8 @@ class LocalizationGenerator {
       final response = await http.get(Uri.parse(link), headers: headers);
       Directory supportDir = await getApplicationSupportDirectory();
       final excelFile = File("${supportDir.path}/data.xlsx");
-      if (!excelFile.existsSync()) {
-        excelFile.createSync(recursive: true);
+      if ((await excelFile.exists()) == false) {
+        await excelFile.create(recursive: true);
       }
       await excelFile.writeAsBytes(response.bodyBytes);
       return excelFile.path;
