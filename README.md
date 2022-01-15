@@ -42,4 +42,4 @@ ditto -ck -rsrc --sequesterRsrc --keepParent "Localization Generator.app" locali
 - Author: Chunlee Thong
 - Contributor: Chunlee Thong
 
-Copyright (c) 2021 Chunlee Thong
+Copyright (c) 2022 Chunlee Thong
