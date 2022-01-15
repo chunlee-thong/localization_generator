@@ -29,7 +29,7 @@ class LocalizationGenerator {
     final bytes = File(path).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     const sheetName = "Translation";
-    final sheet = excel.tables[sheetName];
+    final Sheet? sheet = excel.tables[sheetName] ?? excel.tables["Sheet1"];
     if (sheet == null) throw "Can't find a Translation sheet";
 
     await _generateJSONFile(sheet);
@@ -37,7 +37,7 @@ class LocalizationGenerator {
   }
 
   bool isExcelPath(String value) {
-    return value.contains("xlsx");
+    return value.contains("xlsx") || Uri.parse(value).isAbsolute;
   }
 
   Future<String> getDataFromGoogleSheet(String googleSheetId) async {
@@ -105,7 +105,7 @@ class LocalizationGenerator {
       oneLanguageName = languageName;
 
       //
-      data.keys.toList()..sort();
+      data.keys.toList().sort();
       String jsonData = json.encode(data);
       File languageFile = await File("$saveJsonPath/$languageName.json").create(recursive: true);
       await languageFile.writeAsString(jsonData);

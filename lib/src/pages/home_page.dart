@@ -49,9 +49,9 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
         Toast.show("Generated", context);
       } catch (e) {
         if (e is FileSystemException) {
-          Toast.show(e.message, context, duration: 3);
+          Toast.show(e.message, context, duration: 4);
         } else {
-          Toast.show(e.toString(), context, duration: 3);
+          Toast.show(e.toString(), context, duration: 4);
         }
       }
     }
@@ -66,15 +66,15 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
 
   @override
   void initState() {
+    excelOrGoogleSheetTC = TextEditingController();
+    projectNameTC = TextEditingController();
+    jsonPathTC = TextEditingController();
+    localeKeyPathTC = TextEditingController();
     projectManager.asyncOperation(() async {
       List<ProjectModel> projects = await LocalStorageService.getSavedProject();
       if (projects.isNotEmpty) onSelectProject(projects.first);
       return projects;
     });
-    excelOrGoogleSheetTC = TextEditingController();
-    projectNameTC = TextEditingController();
-    jsonPathTC = TextEditingController();
-    localeKeyPathTC = TextEditingController();
     super.initState();
   }
 

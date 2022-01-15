@@ -1,3 +1,7 @@
+## [2.2.0] - 15 January 2022
+
+- Support folder picker
+
 ## [2.1.0] - 26 June 2021
 
 - Support google sheet document
