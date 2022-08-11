@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:future_manager/future_manager.dart';
 import 'package:localization_generator/src/model/project_model.dart';
 import 'package:localization_generator/src/services/local_storage_service.dart';
 import 'package:localization_generator/src/widgets/project_card.dart';
 import 'package:sura_flutter/sura_flutter.dart';
-import 'package:sura_manager/sura_manager.dart';
 
 class SavedProjectList extends StatelessWidget {
   final FutureManager<List<ProjectModel>> projectManager;

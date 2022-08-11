@@ -1,24 +1,24 @@
 name: localization_generator
 description: Flutter desktop application for generating JSON file and Localekeys class from Excel file or Google sheet. Using along with easy_localization package.
 
-version: 2.2.0
+version: 2.3.0
 publish_to: "none"
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.3
+  cupertino_icons: ^1.0.5
   excel: 2.0.0-null-safety-3
-  sura_flutter: ^1.2.0
-  sura_manager: ^1.2.1
-  path_provider: ^2.0.8
+  sura_flutter: ^1.4.2
+  future_manager: ^1.0.0
+  path_provider: ^2.0.11
   clipboard: ^0.1.3
-  hive: ^2.0.4
+  hive: ^2.2.3
   hive_flutter: ^1.1.0
-  http: ^0.13.4
+  http: ^0.13.5
   flutter_desktop_folder_picker: ^0.0.1
 
   toast:
@@ -28,15 +28,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
-  hive_generator: ^1.1.1
-  build_runner: ^2.1.5
+  hive_generator: ^1.1.3
+  build_runner: ^2.2.0
   flutter_lints:
-  flutter_launcher_icons:
-    git:
-      url: https://github.com/dirkbo/flutter_launcher_icons.git
-      ref: master
+
+  ##Disable this because some conflict dep
+  # flutter_launcher_icons:
+  #   git:
+  #     url: https://github.com/dirkbo/flutter_launcher_icons.git
+  #     ref: master
 
 flutter_icons:
   android: "launcher_icon"

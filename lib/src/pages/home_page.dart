@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_desktop_folder_picker/flutter_desktop_folder_picker.dart';
+import 'package:future_manager/future_manager.dart';
 import 'package:localization_generator/src/pages/widgets/saved_project_list.dart';
 import 'package:sura_flutter/sura_flutter.dart';
-import 'package:sura_manager/sura_manager.dart';
 import 'package:toast/toast.dart';
 
 import '../model/project_model.dart';
@@ -46,12 +46,12 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           DateTime.now().millisecondsSinceEpoch,
         ));
         projectManager.refresh(reloading: false);
-        Toast.show("Generated", context);
+        Toast.show("Generated");
       } catch (e) {
         if (e is FileSystemException) {
-          Toast.show(e.message, context, duration: 4);
+          Toast.show(e.message, duration: 4);
         } else {
-          Toast.show(e.toString(), context, duration: 4);
+          Toast.show(e.toString(), duration: 4);
         }
       }
     }
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
     projectNameTC = TextEditingController();
     jsonPathTC = TextEditingController();
     localeKeyPathTC = TextEditingController();
-    projectManager.asyncOperation(() async {
+    projectManager.execute(() async {
       List<ProjectModel> projects = await LocalStorageService.getSavedProject();
       if (projects.isNotEmpty) onSelectProject(projects.first);
       return projects;
@@ -170,11 +170,11 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
               ),
               SuraAsyncButton(
                 onPressed: onGenerateFile,
-                child: const Text("Generate And Save"),
                 height: 40,
                 color: Colors.blue,
                 textColor: Colors.white,
                 margin: const EdgeInsets.fromLTRB(0, 16, 16, 0),
+                child: const Text("Generate And Save"),
               )
             ],
           ),
