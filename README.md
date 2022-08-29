@@ -33,16 +33,11 @@ Using with easy_localization package: `Text(LocaleKeys.title.tr())`
 
 ![alt text](screenshot.PNG "screenshot")
 
-## Build a sign Mac OS
-- run `security find-identity -p codesigning` to get developer id
-- `flutter build macos`
-- `cd build/macos/build/products/release`
-- `codesign --deep --force --verbose --sign "$developer_id"  "Localization Generator.app"`
-- zip it
-
-## Mac zip command
-
-ditto -ck -rsrc --sequesterRsrc --keepParent "Localization Generator.app" localization-generator-macos.zip
+## Build a MacOS
+- notarize the app with command line or xcode archive
+## Wrapping
+- DMG: `hdiutil create -volname LocalizationGenrator -srcfolder "Localization Generator.app" -ov -format UDBZ localization_generator_macos_2.3.0.dmg`
+- ZIP: `ditto -ck -rsrc --sequesterRsrc --keepParent "Localization Generator.app" localization-generator-macos.zip`
 
 ## Localization Generator
 

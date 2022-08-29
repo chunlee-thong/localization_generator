@@ -8,6 +8,9 @@
 .buildlog/
 .history
 .svn/
+*.dmg
+*.app
+
 
 # IntelliJ related
 *.iml
@@ -30,6 +33,7 @@
 .pub-cache/
 .pub/
 /build/
+/scripts/
 
 # Web related
 lib/generated_plugin_registrant.dart
