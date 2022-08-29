@@ -1,3 +1,6 @@
+## [2.3.0] - 30 August 2023
+- Update package version and fix MacOS executable
+
 ## [2.2.0] - 15 January 2022
 
 - Support folder picker
