@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:localization_generator/src/model/project_model.dart';
-import 'package:sura_flutter/sura_flutter.dart';
+import 'package:skadi/skadi.dart';
 
 class ProjectCard extends StatelessWidget {
   final VoidCallback onSelect;
@@ -18,7 +18,7 @@ class ProjectCard extends StatelessWidget {
     return Card(
       elevation: 3.5,
       margin: const EdgeInsets.only(bottom: 16),
-      child: SuraListTile(
+      child: ListTile(
         leading: const Icon(Icons.book),
         onTap: onSelect,
         title: Text(project.name),

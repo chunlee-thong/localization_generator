@@ -37,7 +37,13 @@ class LocalizationGenerator {
   }
 
   bool isExcelPath(String value) {
-    return value.contains("xlsx") || Uri.parse(value).isAbsolute;
+    bool isFile = value.contains("xlsx") || Uri.parse(value).isAbsolute;
+    if (!isFile) return false;
+    final exist = File(value).existsSync();
+    if (!exist) {
+      throw "Excel file doesn't exist";
+    }
+    return true;
   }
 
   Future<String> getDataFromGoogleSheet(String googleSheetId) async {
@@ -48,13 +54,19 @@ class LocalizationGenerator {
     String link = "https://docs.google.com/spreadsheets/export?format=xlsx&id=$googleSheetId";
     try {
       final response = await http.get(Uri.parse(link), headers: headers);
-      Directory supportDir = await getApplicationSupportDirectory();
-      final excelFile = File("${supportDir.path}/data.xlsx");
-      if ((await excelFile.exists()) == false) {
-        await excelFile.create(recursive: true);
+      if (response.statusCode == 200) {
+        Directory supportDir = await getApplicationSupportDirectory();
+        final excelFile = File("${supportDir.path}/data.xlsx");
+        if ((await excelFile.exists()) == false) {
+          await excelFile.create(recursive: true);
+        }
+        await excelFile.writeAsBytes(response.bodyBytes);
+        return excelFile.path;
+      } else if (response.statusCode == 404) {
+        throw "Invalid Excel file or Sheet Id";
+      } else {
+        throw response.body;
       }
-      await excelFile.writeAsBytes(response.bodyBytes);
-      return excelFile.path;
     } catch (e) {
       rethrow;
     }

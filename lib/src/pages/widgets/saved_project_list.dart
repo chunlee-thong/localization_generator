@@ -3,7 +3,7 @@ import 'package:future_manager/future_manager.dart';
 import 'package:localization_generator/src/model/project_model.dart';
 import 'package:localization_generator/src/services/local_storage_service.dart';
 import 'package:localization_generator/src/widgets/project_card.dart';
-import 'package:sura_flutter/sura_flutter.dart';
+import 'package:skadi/skadi.dart';
 
 class SavedProjectList extends StatelessWidget {
   final FutureManager<List<ProjectModel>> projectManager;
@@ -29,7 +29,7 @@ class SavedProjectList extends StatelessWidget {
                   TextButton.icon(
                     label: const Text("Clear"),
                     style: TextButton.styleFrom(
-                      primary: Colors.red,
+                      foregroundColor: Colors.red,
                     ),
                     onPressed: () async {
                       await LocalStorageService.clearAll();
@@ -48,7 +48,7 @@ class SavedProjectList extends StatelessWidget {
                   onTrue: () => Center(
                     child: Text(
                       "Empty",
-                      style: Theme.of(context).textTheme.headline5,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                   onFalse: () => ListView.builder(

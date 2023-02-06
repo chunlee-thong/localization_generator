@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_desktop_folder_picker/flutter_desktop_folder_picker.dart';
 import 'package:future_manager/future_manager.dart';
 import 'package:localization_generator/src/pages/widgets/saved_project_list.dart';
-import 'package:sura_flutter/sura_flutter.dart';
-import 'package:toast/toast.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:skadi/skadi.dart';
 
 import '../model/project_model.dart';
 import '../services/local_storage_service.dart';
@@ -16,10 +16,10 @@ import '../widgets/simple_text_field.dart';
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SuraFormMixin {
+class _HomePageState extends State<HomePage> with SkadiFormMixin {
   late TextEditingController excelOrGoogleSheetTC, jsonPathTC, localeKeyPathTC, projectNameTC;
 
   FutureManager<List<ProjectModel>> projectManager = FutureManager();
@@ -46,12 +46,12 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
           DateTime.now().millisecondsSinceEpoch,
         ));
         projectManager.refresh(reloading: false);
-        Toast.show("Generated");
+        showToast("Generated");
       } catch (e) {
         if (e is FileSystemException) {
-          Toast.show(e.message, duration: 4);
+          showToast(e.message);
         } else {
-          Toast.show(e.toString(), duration: 4);
+          showToast(e.toString());
         }
       }
     }
@@ -168,11 +168,11 @@ class _HomePageState extends State<HomePage> with SuraFormMixin {
                 },
                 hint: "Save locale key class path",
               ),
-              SuraAsyncButton(
+              SkadiAsyncButton(
                 onPressed: onGenerateFile,
                 height: 40,
-                color: Colors.blue,
-                textColor: Colors.white,
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
                 margin: const EdgeInsets.fromLTRB(0, 16, 16, 0),
                 child: const Text("Generate And Save"),
               )

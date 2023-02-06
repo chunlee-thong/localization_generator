@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sura_flutter/sura_flutter.dart';
+import 'package:skadi/skadi.dart';
 
 class SimpleTextField extends StatelessWidget {
   final bool readOnly;
@@ -30,7 +30,7 @@ class SimpleTextField extends StatelessWidget {
             children: [
               TextFormField(
                 readOnly: readOnly,
-                validator: (value) => SuraFormValidator.validateField(value!, field: hint),
+                validator: (value) => SkadiFormValidator.validateField(value!, field: hint),
                 controller: controller,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),

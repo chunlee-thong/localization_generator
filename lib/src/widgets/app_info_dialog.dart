@@ -11,7 +11,7 @@ class AppInfoDialog extends StatelessWidget {
         "assets/images/app-icon.png",
         width: 64,
       ),
-      applicationVersion: "2.3",
+      applicationVersion: "3.0.0",
       children: const [
         Text("Maintainer: Chunlee Thong"),
       ],
