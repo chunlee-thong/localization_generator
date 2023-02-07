@@ -3,20 +3,31 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel/excel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
+Future<Excel> decodeExcel(String path) async {
+  final bytes = File(path).readAsBytesSync();
+  final excel = Excel.decodeBytes(bytes);
+  return excel;
+}
+
 class LocalizationGenerator {
-  static String? oneLanguageName;
+  static String? _oneLanguageName;
 
   final String excelFilePathOrGoogleSheetId;
   final String saveJsonPath;
   final String saveLocaleKeyClassPath;
+  final String sheetName;
+
+  final Map<String, String> _validData = {};
 
   LocalizationGenerator({
     required this.excelFilePathOrGoogleSheetId,
     required this.saveJsonPath,
     required this.saveLocaleKeyClassPath,
+    required this.sheetName,
   });
 
   Future<void> generate() async {
@@ -26,12 +37,11 @@ class LocalizationGenerator {
     } else {
       path = await getDataFromGoogleSheet(excelFilePathOrGoogleSheetId);
     }
-    final bytes = File(path).readAsBytesSync();
-    final excel = Excel.decodeBytes(bytes);
-    const sheetName = "Translation";
-    final Sheet? sheet = excel.tables[sheetName] ?? excel.tables["Sheet1"];
-    if (sheet == null) throw "Can't find a Translation sheet";
 
+    final excel = await compute(decodeExcel, path);
+    //
+    final Sheet? sheet = excel.sheets[sheetName] ?? excel.tables["Sheet1"];
+    if (sheet == null) throw "Can't find a Translation sheet";
     await _generateJSONFile(sheet);
     await _generateDartClass();
   }
@@ -74,14 +84,14 @@ class LocalizationGenerator {
 
   Future<void> _generateJSONFile(Sheet sheet) async {
     //get language count by column count minus 1 (minus 1 because first column is a key column)
-    int languageCount = sheet.maxCols - 1;
+    int languageCount = 3;
 
     //get key count by row count minus 1 (minus 1 because first row is a title row)
     int keyCount = sheet.maxRows - 1;
 
     //generate language list
     List<int> languageList = List<int>.generate(languageCount, (i) => i + 1);
-    for (int lang in languageList) {
+    for (var lang in languageList) {
       //SplayTreeMap auto sort it's key
       SplayTreeMap<String, dynamic> data = SplayTreeMap<String, dynamic>();
 
@@ -94,6 +104,9 @@ class LocalizationGenerator {
             ))
             .value
             .toString();
+        if (isNull(key)) {
+          continue;
+        }
         String value = sheet
             .cell(CellIndex.indexByColumnRow(
               columnIndex: lang,
@@ -103,6 +116,10 @@ class LocalizationGenerator {
             .toString();
         key = key.replaceAll(" ", "-");
         data[key] = value;
+        _saveValidData(key, value);
+        if (isNull(value)) {
+          data[key] = _validData[key];
+        }
       }
       //get language name
       String languageName = sheet
@@ -114,7 +131,7 @@ class LocalizationGenerator {
           .toString();
 
       //Save file language name to access json file and read key for LocaleKeys class
-      oneLanguageName = languageName;
+      _oneLanguageName = languageName;
 
       //
       data.keys.toList().sort();
@@ -124,8 +141,20 @@ class LocalizationGenerator {
     }
   }
 
+  bool isNull(String value) {
+    return value == "null";
+  }
+
+  void _saveValidData(String key, String value) {
+    if (_validData[key] == null) {
+      if (!isNull(value)) {
+        _validData[key] = value;
+      }
+    }
+  }
+
   Future<void> _generateDartClass() async {
-    File jsonFile = File("$saveJsonPath/$oneLanguageName.json");
+    File jsonFile = File("$saveJsonPath/$_oneLanguageName.json");
     String jsonData = await jsonFile.readAsString();
     Map<String, dynamic> mapData = json.decode(jsonData);
     String dartClass = "class LocaleKeys {\n";

@@ -205,10 +205,10 @@ packages:
     dependency: "direct main"
     description:
       name: excel
-      sha256: "535415e6ddf722974d23357d253f7cda76136b379e3ca2013e7d76d4357c8f64"
+      sha256: a637cecff4f20ff9c0e7d7b223af2ece252b8a31f018f9d46d4da88440c72c3c
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0-null-safety-3"
+    version: "2.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -571,6 +571,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      sha256: "4931f226ca158123ccd765325e9fbf360bfed0af9b460a10f960f9bb13d58323"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   shelf:
     dependency: transitive
     description:
@@ -728,6 +736,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      sha256: "5bdd29dc5f1f3185fc90696373a571d77968e03e5e820fb1ecdbdade3f5d8fff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   xdg_directories:
     dependency: transitive
     description:

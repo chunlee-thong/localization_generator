@@ -1,7 +1,7 @@
 name: localization_generator
 description: Flutter desktop application for generating JSON file and Localekeys class from Excel file or Google sheet. Using along with easy_localization package.
 
-version: 3.0.0
+version: 3.1.0
 publish_to: "none"
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.5
-  excel: 2.0.0-null-safety-3
+  excel: ^2.0.1
   skadi: ^2.2.1
   future_manager: ^1.4.0
   path_provider: ^2.0.11
@@ -21,6 +21,7 @@ dependencies:
   http: ^0.13.5
   flutter_desktop_folder_picker: ^0.0.1
   oktoast: ^3.3.1
+  window_manager: ^0.3.0
 
 dev_dependencies:
   flutter_test:

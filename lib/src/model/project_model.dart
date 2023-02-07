@@ -17,7 +17,17 @@ class ProjectModel {
   final String localeKeyPath;
 
   @HiveField(4)
+  final String sheetName;
+
+  @HiveField(5)
   final int? timestamp;
 
-  ProjectModel(this.name, this.excelPath, this.jsonPath, this.localeKeyPath, this.timestamp);
+  ProjectModel(
+    this.name,
+    this.excelPath,
+    this.jsonPath,
+    this.localeKeyPath,
+    this.sheetName,
+    this.timestamp,
+  );
 }

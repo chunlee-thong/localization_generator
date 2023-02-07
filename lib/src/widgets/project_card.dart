@@ -15,25 +15,37 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3.5,
-      margin: const EdgeInsets.only(bottom: 16),
-      child: ListTile(
-        leading: const Icon(Icons.book),
-        onTap: onSelect,
-        title: Text(project.name),
-        subtitle: Column(
+    return Material(
+      elevation: 3.0,
+      color: Colors.white,
+      shape: SkadiDecoration.roundRect(),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SpaceY(),
-            Text(project.excelPath),
-            Text(project.jsonPath),
-            Text(project.localeKeyPath),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: CircleAvatar(child: Text(project.name)),
+            ),
+            const SpaceX(16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SpaceY(),
+                Text(project.excelPath),
+                const Divider(),
+                Text(project.jsonPath),
+                const Divider(),
+                Text(project.localeKeyPath),
+              ],
+            ).expanded,
+            const SpaceX(16),
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(Icons.delete, color: Colors.red),
+            ),
           ],
-        ),
-        trailing: IconButton(
-          onPressed: onDelete,
-          icon: const Icon(Icons.delete, color: Colors.red),
         ),
       ),
     );

@@ -19,8 +19,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SkadiFormMixin {
-  late TextEditingController excelOrGoogleSheetTC, jsonPathTC, localeKeyPathTC, projectNameTC;
+class _HomePageState extends State<HomePage> with SkadiFormMixin, DeferDispose {
+  late TextEditingController excelOrGoogleSheetTC = createDefer(() => TextEditingController());
+  late TextEditingController jsonPathTC = createDefer(() => TextEditingController());
+  late TextEditingController localeKeyPathTC = createDefer(() => TextEditingController());
+  late TextEditingController sheetNameTC = createDefer(() => TextEditingController());
+  late TextEditingController projectNameTC = createDefer(() => TextEditingController());
 
   FutureManager<List<ProjectModel>> projectManager = FutureManager();
 
@@ -29,6 +33,7 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
       String projectName = projectNameTC.text.trim();
       String jsonPath = jsonPathTC.text.trim();
       String localeClassPath = localeKeyPathTC.text.trim();
+      String sheetName = sheetNameTC.text.trim();
       String excelOrGoogleSheet = excelOrGoogleSheetTC.text.trim();
 
       try {
@@ -36,6 +41,7 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
           excelFilePathOrGoogleSheetId: excelOrGoogleSheet,
           saveJsonPath: jsonPath,
           saveLocaleKeyClassPath: localeClassPath,
+          sheetName: sheetName,
         ).generate();
         //
         await LocalStorageService.saveProject(ProjectModel(
@@ -43,6 +49,7 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
           excelOrGoogleSheet,
           jsonPath,
           localeClassPath,
+          sheetName,
           DateTime.now().millisecondsSinceEpoch,
         ));
         projectManager.refresh(reloading: false);
@@ -62,14 +69,11 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
     excelOrGoogleSheetTC.text = project.excelPath;
     jsonPathTC.text = project.jsonPath;
     localeKeyPathTC.text = project.localeKeyPath;
+    sheetNameTC.text = project.sheetName;
   }
 
   @override
   void initState() {
-    excelOrGoogleSheetTC = TextEditingController();
-    projectNameTC = TextEditingController();
-    jsonPathTC = TextEditingController();
-    localeKeyPathTC = TextEditingController();
     projectManager.execute(() async {
       List<ProjectModel> projects = await LocalStorageService.getSavedProject();
       if (projects.isNotEmpty) onSelectProject(projects.first);
@@ -79,19 +83,11 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
   }
 
   @override
-  void dispose() {
-    excelOrGoogleSheetTC.dispose();
-    projectNameTC.dispose();
-    jsonPathTC.dispose();
-    localeKeyPathTC.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0.0,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Image.asset("assets/images/app-icon.png"),
@@ -146,7 +142,10 @@ class _HomePageState extends State<HomePage> with SkadiFormMixin {
               SimpleTextField(
                 controller: excelOrGoogleSheetTC,
                 hint: "Excel file or Sheet ID",
-                //onPickPath: onPickExcelFile,
+              ),
+              SimpleTextField(
+                controller: sheetNameTC,
+                hint: "Sheet name",
               ),
               SimpleTextField(
                 controller: jsonPathTC,

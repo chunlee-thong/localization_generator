@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'src/model/project_model.dart';
 import 'src/pages/home_page.dart';
@@ -15,6 +16,16 @@ void main() async {
   //Window: ~/Appdata/roaming/com.chunlee/localization_generator
   //MAC: ~/Library/Application support/com.chunlee.localization_generator
   await Hive.initFlutter(supportDir.path);
+  await windowManager.ensureInitialized();
+
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(1000, 800),
+    center: true,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
   runApp(const MyApp());
 }
 

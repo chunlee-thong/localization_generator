@@ -21,14 +21,15 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
       fields[1] as String,
       fields[2] as String,
       fields[3] as String,
-      fields[4] == null ? null : fields[4] as int,
+      fields[4] as String,
+      fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ProjectModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -38,6 +39,8 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
       ..writeByte(3)
       ..write(obj.localeKeyPath)
       ..writeByte(4)
+      ..write(obj.sheetName)
+      ..writeByte(5)
       ..write(obj.timestamp);
   }
 
@@ -46,5 +49,8 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ProjectModelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      identical(this, other) ||
+      other is ProjectModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

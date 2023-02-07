@@ -1,4 +1,5 @@
-
+## [3.1.0] - 7 February 2023
+- Generator improvement
 ## [3.0.0] - 6 February 2023
 - Update package version and improve error handling
 ## [2.3.0] - 30 August 2023
