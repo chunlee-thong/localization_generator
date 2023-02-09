@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_desktop_folder_picker/flutter_desktop_folder_picker.dart';
 import 'package:future_manager/future_manager.dart';
-import 'package:localization_generator/src/pages/widgets/saved_project_list.dart';
+import 'package:localization_generator/src/pages/saved_project_list.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:skadi/skadi.dart';
 

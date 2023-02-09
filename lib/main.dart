@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
       position: ToastPosition.bottom,
       duration: const Duration(seconds: 4),
       child: MaterialApp(
-        title: 'Localization generator',
+        title: 'Localization Generator',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,

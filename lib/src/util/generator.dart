@@ -84,7 +84,7 @@ class LocalizationGenerator {
 
   Future<void> _generateJSONFile(Sheet sheet) async {
     //get language count by column count minus 1 (minus 1 because first column is a key column)
-    int languageCount = 3;
+    int languageCount = sheet.maxCols - 1;
 
     //get key count by row count minus 1 (minus 1 because first row is a title row)
     int keyCount = sheet.maxRows - 1;
@@ -114,6 +114,8 @@ class LocalizationGenerator {
             ))
             .value
             .toString();
+
+        //
         key = key.replaceAll(" ", "-");
         data[key] = value;
         _saveValidData(key, value);

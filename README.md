@@ -5,8 +5,6 @@ Generate json localization file from excel sheet
 This app is intended to use to easy_localization package, but you can aslo use it with another localization package with json base file.
 
 ## How to use
-
-- create an excel sheet and rename sheet's name to **Translation**
 - Create sheet data structure like below or you can check file **translation_example.xlsx** in this repo
 
 | Key         | en-US       | km-KH | es-ES          | th-TH | vi-VN  |
@@ -36,7 +34,7 @@ Using with easy_localization package: `Text(LocaleKeys.title.tr())`
 ## Build a MacOS
 - notarize the app with command line or xcode archive
 ## Wrapping
-- DMG: `hdiutil create -volname LocalizationGenerator -srcfolder "Localization Generator.app" -ov -format UDBZ localization_generator_macos_3.0.0.dmg`
+- DMG: `hdiutil create -volname LocalizationGenerator -srcfolder "Localization Generator" -ov -format UDBZ localization_generator_macos_3.1.0.dmg`
 
 ## Localization Generator
 
