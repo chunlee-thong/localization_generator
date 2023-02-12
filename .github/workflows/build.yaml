@@ -15,18 +15,27 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
-      - run: flutter doctor -v
-      - run: flutter config --enable-windows-desktop
-      - run: flutter pub get
-      - run: flutter pub run build_runner build --delete-conflicting-outputs
-      - run: flutter build windows --release
-      - name: Archive Release
+          cache: true
+      - name: Enable window support
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build runner for Hive database
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build exe for windows
+        run: flutter build windows --release
+
+      - name: Archive built result
         uses: thedoctor0/zip-release@master
         with:
           type: "zip"
           filename: Localization-Generator-windows-${{inputs.version}}.zip
           directory: build/windows/runner/Release
-      - name: "Upload Artifact"
+
+      - name: "Upload to Artifact"
         uses: actions/upload-artifact@v3
         with:
           name: ${{inputs.version}}
