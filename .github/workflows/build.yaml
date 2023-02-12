@@ -39,5 +39,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{inputs.version}}
-          path: Localization-Generator-windows-${{inputs.version}}.zip
+          path: build/windows/runner/Release/Localization-Generator-windows-${{inputs.version}}.zip
           retention-days: 5
