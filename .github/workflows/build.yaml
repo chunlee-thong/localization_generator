@@ -17,6 +17,10 @@ jobs:
           channel: "stable"
           flutter-version: "3.7.3"
           cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+          cache-path: ${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:
+          architecture: x64
+
       - name: Enable window support
         run: flutter config --enable-windows-desktop
 
