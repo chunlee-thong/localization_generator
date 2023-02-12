@@ -15,6 +15,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
+          flutter-version: "3.7.3"
           cache: true
       - name: Enable window support
         run: flutter config --enable-windows-desktop
@@ -38,6 +39,6 @@ jobs:
       - name: "Upload to Artifact"
         uses: actions/upload-artifact@v3
         with:
-          name: ${{inputs.version}}
+          name: Localization-Generator-windows-${{inputs.version}}
           path: build/windows/runner/Release/Localization-Generator-windows-${{inputs.version}}.zip
-          retention-days: 5
+          retention-days: 2
